@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基础测试页面</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            background: #f0f2f5; 
+        }
+        .test-box { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin: 10px 0; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .success { color: #52c41a; }
+        .error { color: #f5222d; }
+        .info { color: #1890ff; }
+    </style>
+</head>
+<body>
+    <div class="test-box">
+        <h1>基础环境测试</h1>
+        <p>如果您看到这个页面，说明HTML/CSS正常工作。</p>
+    </div>
+    
+    <div class="test-box">
+        <h2>JavaScript测试</h2>
+        <div id="js-test">JavaScript未执行</div>
+        <div id="dom-test"></div>
+        <div id="time-test"></div>
+    </div>
+    
+    <div class="test-box">
+        <h2>浏览器API测试</h2>
+        <div id="storage-test"></div>
+        <div id="fetch-test"></div>
+    </div>
+
+    <script>
+        console.log('测试脚本开始执行');
+        
+        // 基础JavaScript测试
+        document.getElementById('js-test').innerHTML = '<span class="success">✓ JavaScript正常工作</span>';
+        
+        // DOM操作测试
+        const domTest = document.getElementById('dom-test');
+        domTest.innerHTML = '<span class="success">✓ DOM操作正常</span>';
+        
+        // 时间显示测试
+        const timeTest = document.getElementById('time-test');
+        timeTest.innerHTML = '<span class="info">当前时间: ' + new Date().toLocaleString() + '</span>';
+        
+        // LocalStorage测试
+        try {
+            localStorage.setItem('test', 'value');
+            const value = localStorage.getItem('test');
+            localStorage.removeItem('test');
+            document.getElementById('storage-test').innerHTML = '<span class="success">✓ LocalStorage正常工作</span>';
+        } catch (e) {
+            document.getElementById('storage-test').innerHTML = '<span class="error">✗ LocalStorage错误: ' + e.message + '</span>';
+        }
+        
+        // Fetch API测试
+        try {
+            fetch('/test.html')
+                .then(response => {
+                    document.getElementById('fetch-test').innerHTML = '<span class="success">✓ Fetch API正常工作 (状态: ' + response.status + ')</span>';
+                })
+                .catch(error => {
+                    document.getElementById('fetch-test').innerHTML = '<span class="error">✗ Fetch API错误: ' + error.message + '</span>';
+                });
+        } catch (e) {
+            document.getElementById('fetch-test').innerHTML = '<span class="error">✗ Fetch API不支持</span>';
+        }
+        
+        console.log('测试脚本执行完成');
+    </script>
+</body>
+</html>
