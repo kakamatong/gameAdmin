@@ -75,15 +75,4 @@ export interface GameLogsResponse {
   data: GameLogItem[];
 }
 
-// 游戏结果枚举
-export enum GameResult {
-  LOSE = 0,
-  WIN = 1,
-  DRAW = 2,
-}
-
-// 登录状态枚举
-export enum LoginStatus {
-  FAILED = 0,
-  SUCCESS = 1,
-}
+// 注意：游戏结果和登录状态枚举已移至 ./enums.ts 文件统一管理

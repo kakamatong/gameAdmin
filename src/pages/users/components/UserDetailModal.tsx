@@ -5,6 +5,7 @@
 import React from 'react';
 import { Modal, Descriptions, Tag, Avatar, Space, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
+import { getGenderText, getUserStatusText, getRichTypeText, RichType } from '@/types/enums';
 import type { UserInfo } from '@/types';
 
 const { Text } = Typography;
@@ -27,18 +28,12 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
     return new Date(timeStr).toLocaleString();
   };
 
-  // 获取性别文本
-  const getSexText = (sex: number) => {
-    const sexMap = { 0: '未知', 1: '男', 2: '女' };
-    return sexMap[sex as keyof typeof sexMap] || '未知';
-  };
-
   // 获取状态标签
-  const getStatusTag = (status: number) => (
-    <Tag color={status === 1 ? 'green' : 'red'}>
-      {status === 1 ? '正常' : '禁用'}
-    </Tag>
-  );
+  const getStatusTag = (status: number) => {
+    const statusText = getUserStatusText(status);
+    const color = status === 1 ? 'green' : status === 2 ? 'red' : 'gray';
+    return <Tag color={color}>{statusText}</Tag>;
+  };
 
   // 获取财富信息
   const getRichesInfo = () => {
@@ -46,19 +41,11 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
       return <Text type="secondary">暂无财富信息</Text>;
     }
 
-    const richTypeMap: Record<number, string> = {
-      1: '钻石',
-      2: '金币',
-      3: '门票',
-      4: '体力',
-      5: 'VIP经验',
-    };
-
     return (
       <Space direction="vertical" size={4}>
         {user.riches.map((rich, index) => (
           <div key={index}>
-            <Text strong>{richTypeMap[rich.richType] || `类型${rich.richType}`}:</Text>
+            <Text strong>{getRichTypeText(rich.richType)}:</Text>
             <Text style={{ marginLeft: 8 }}>{rich.richNums.toLocaleString()}</Text>
           </div>
         ))}
@@ -100,7 +87,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
           />
         </Descriptions.Item>
         <Descriptions.Item label="性别" span={1}>
-          {getSexText(user.sex)}
+          {getGenderText(user.sex)}
         </Descriptions.Item>
 
         <Descriptions.Item label="省份" span={1}>

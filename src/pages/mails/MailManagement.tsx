@@ -35,6 +35,7 @@ import {
   getMailStatsAsync,
   setCurrentMail 
 } from '@/store/slices/mailSlice';
+import { MailType, MailStatus, getMailTypeText, getMailStatusText } from '@/types/enums';
 import SendMailModal from './components/SendMailModal';
 import MailDetailModal from './components/MailDetailModal';
 import type { MailItem, MailListRequest } from '@/types';
@@ -101,7 +102,7 @@ const MailManagement: React.FC = () => {
 
   // 更新邮件状态
   const handleUpdateStatus = (mail: MailItem, status: number) => {
-    const statusText = status === 1 ? '启用' : '禁用';
+    const statusText = getMailStatusText(status);
     
     confirm({
       title: `确认${statusText}邮件`,
@@ -154,11 +155,11 @@ const MailManagement: React.FC = () => {
       dataIndex: 'type',
       key: 'type',
       width: 100,
-      render: (type: number) => (
-        <Tag color={type === 0 ? 'blue' : 'green'}>
-          {type === 0 ? '全服邮件' : '个人邮件'}
-        </Tag>
-      ),
+      render: (type: number) => {
+        const typeText = getMailTypeText(type);
+        const color = type === MailType.GLOBAL ? 'blue' : 'green';
+        return <Tag color={color}>{typeText}</Tag>;
+      },
     },
     {
       title: '内容摘要',
@@ -195,11 +196,11 @@ const MailManagement: React.FC = () => {
       dataIndex: 'status',
       key: 'status',
       width: 80,
-      render: (status: number) => (
-        <Tag color={status === 1 ? 'green' : 'red'}>
-          {status === 1 ? '启用' : '禁用'}
-        </Tag>
-      ),
+      render: (status: number) => {
+        const statusText = getMailStatusText(status);
+        const color = status === MailStatus.ACTIVE ? 'green' : 'red';
+        return <Tag color={color}>{statusText}</Tag>;
+      },
     },
     {
       title: '有效期',
@@ -255,12 +256,12 @@ const MailManagement: React.FC = () => {
               onClick={() => handleViewDetail(record)}
             />
           </Tooltip>
-          <Tooltip title={record.status === 1 ? '禁用' : '启用'}>
+          <Tooltip title={record.status === MailStatus.ACTIVE ? '禁用' : '启用'}>
             <Button
               type="text"
               size="small"
               icon={<EditOutlined />}
-              onClick={() => handleUpdateStatus(record, record.status === 1 ? 0 : 1)}
+              onClick={() => handleUpdateStatus(record, record.status === MailStatus.ACTIVE ? MailStatus.DISABLED : MailStatus.ACTIVE)}
             />
           </Tooltip>
         </Space>
@@ -331,16 +332,16 @@ const MailManagement: React.FC = () => {
             <Col xs={24} sm={8} md={6}>
               <Form.Item name="type" style={{ width: '100%' }}>
                 <Select placeholder="邮件类型" allowClear>
-                  <Option value={0}>全服邮件</Option>
-                  <Option value={1}>个人邮件</Option>
+                  <Option value={MailType.GLOBAL}>全服邮件</Option>
+                  <Option value={MailType.PERSONAL}>个人邮件</Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col xs={24} sm={8} md={6}>
               <Form.Item name="status" style={{ width: '100%' }}>
                 <Select placeholder="状态" allowClear>
-                  <Option value={1}>启用</Option>
-                  <Option value={0}>禁用</Option>
+                  <Option value={MailStatus.ACTIVE}>启用</Option>
+                  <Option value={MailStatus.DISABLED}>禁用</Option>
                 </Select>
               </Form.Item>
             </Col>

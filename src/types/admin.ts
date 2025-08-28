@@ -44,13 +44,6 @@ export interface CreateAdminRequest {
   note?: string;
 }
 
-// 管理员状态枚举
-export enum AdminStatus {
-  INACTIVE = 0,
-  ACTIVE = 1,
-  LOCKED = 2,
-}
-
 // JWT Token Claims
 export interface AdminJWTClaims {
   adminId: number;
@@ -63,3 +56,5 @@ export interface AdminJWTClaims {
   exp: number;
   iat: number;
 }
+
+// 注意：管理员状态枚举已移至 ./enums.ts 文件统一管理

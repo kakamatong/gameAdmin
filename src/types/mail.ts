@@ -2,7 +2,7 @@
  * 邮件相关类型定义
  */
 
-import type { PaginationParams, ListQueryParams } from './api';
+import type { ListQueryParams } from './api';
 
 // 邮件奖励项
 export interface MailAwardItem {
@@ -75,24 +75,4 @@ export interface UserMailItem {
   createTime: string;
 }
 
-// 邮件类型枚举
-export enum MailType {
-  GLOBAL = 0,   // 全服邮件
-  PERSONAL = 1, // 个人邮件
-}
-
-// 邮件状态枚举
-export enum MailStatus {
-  DISABLED = 0, // 禁用
-  ACTIVE = 1,   // 启用
-}
-
-// 奖励类型枚举
-export enum AwardType {
-  DIAMOND = 1,      // 钻石
-  GOLD = 2,   // 金币
-  TICKET = 3,    // 门票
-  ENERGY = 4,    // 体力
-  ITEM = 5,      // 道具
-  VIP_EXP = 6,   // VIP经验
-}
+// 注意：邮件类型、状态和奖励类型枚举已移至 ./enums.ts 文件统一管理

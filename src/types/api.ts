@@ -41,10 +41,4 @@ export interface ApiError {
   data?: any;
 }
 
-// 请求状态枚举
-export enum RequestStatus {
-  IDLE = 'idle',
-  LOADING = 'loading',
-  SUCCESS = 'success',
-  ERROR = 'error',
-}
+// 注意：请求状态枚举已移至 ./enums.ts 文件统一管理

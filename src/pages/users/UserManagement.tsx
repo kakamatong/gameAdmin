@@ -28,6 +28,7 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { getUserListAsync, setCurrentUser } from '@/store/slices/userSlice';
+import { getGenderText, getUserStatusText, RichType } from '@/types/enums';
 import UserDetailModal from './components/UserDetailModal';
 import UserEditModal from './components/UserEditModal';
 import type { UserInfo, UserListRequest } from '@/types';
@@ -136,10 +137,7 @@ const UserManagement: React.FC = () => {
       dataIndex: 'sex',
       key: 'sex',
       width: 80,
-      render: (sex: number) => {
-        const sexMap = { 0: '未知', 1: '男', 2: '女' };
-        return sexMap[sex as keyof typeof sexMap] || '未知';
-      },
+      render: (sex: number) => getGenderText(sex),
     },
     {
       title: '地区',
@@ -163,19 +161,19 @@ const UserManagement: React.FC = () => {
       dataIndex: 'status',
       key: 'status',
       width: 80,
-      render: (status: number) => (
-        <Tag color={status === 1 ? 'green' : 'red'}>
-          {status === 1 ? '正常' : '禁用'}
-        </Tag>
-      ),
+      render: (status: number) => {
+        const statusText = getUserStatusText(status);
+        const color = status === 1 ? 'green' : status === 2 ? 'red' : 'gray';
+        return <Tag color={color}>{statusText}</Tag>;
+      },
     },
     {
       title: '财富',
       key: 'riches',
       width: 150,
       render: (_, record: UserInfo) => {
-        const goldRich = record.riches?.find(r => r.richType === 1);
-        const diamondRich = record.riches?.find(r => r.richType === 2);
+        const goldRich = record.riches?.find(r => r.richType === RichType.GOLD);
+        const diamondRich = record.riches?.find(r => r.richType === RichType.DIAMOND);
         
         return (
           <Space direction="vertical" size={0}>

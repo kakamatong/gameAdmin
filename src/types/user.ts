@@ -2,7 +2,7 @@
  * 用户相关类型定义
  */
 
-import type { PaginationParams, ListQueryParams } from './api';
+import type { ListQueryParams } from './api';
 
 // 用户财富信息
 export interface UserRich {
@@ -45,25 +45,4 @@ export interface UserUpdateRequest {
   riches?: UserRich[];
 }
 
-// 用户状态枚举
-export enum UserStatus {
-  DISABLED = 0,
-  ACTIVE = 1,
-  BANNED = 2,
-}
-
-// 性别枚举
-export enum Gender {
-  UNKNOWN = 0,
-  MALE = 1,
-  FEMALE = 2,
-}
-
-// 财富类型枚举
-export enum RichType {
-  DIAMOND = 1,      // 钻石
-  GOLD = 2,   // 金币
-  TICKET = 3,    // 门票
-  ENERGY = 4,    // 体力
-  VIP_EXP = 5,   // VIP经验
-}
+// 注意：用户状态、性别和财富类型枚举已移至 ./enums.ts 文件统一管理

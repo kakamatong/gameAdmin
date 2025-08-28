@@ -20,6 +20,11 @@ export type * from './mail';
 // 组件相关类型
 export type * from './component';
 
+// 公用枚举类型
+// 注意：由于 TypeScript 配置限制，请直接从 './enums' 文件导入
+// export * from './enums';
+// export type * from './enums';
+
 // 全局状态类型
 export interface RootState {
   auth: AuthState;
