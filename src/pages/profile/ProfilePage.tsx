@@ -85,7 +85,19 @@ const ProfilePage: React.FC = () => {
   if (loading && !currentAdminInfo) {
     return (
       <div style={{ textAlign: 'center', padding: '50px' }}>
-        <Spin size="large" tip="加载中..." />
+        <Spin size="large" spinning={true}>
+          <div style={{ 
+            minHeight: '100px', 
+            minWidth: '100px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#666'
+          }}>
+            加载中...
+          </div>
+        </Spin>
       </div>
     );
   }
