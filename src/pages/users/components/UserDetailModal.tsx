@@ -6,6 +6,7 @@ import React from 'react';
 import { Modal, Descriptions, Tag, Avatar, Space, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { getGenderText, getUserStatusText, getRichTypeText, RichType } from '@/types/enums';
+import { getSafeAvatarProps } from '@/utils/react19Compatibility';
 import type { UserInfo } from '@/types';
 
 const { Text } = Typography;
@@ -59,7 +60,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
         <Space>
           <Avatar 
             size={32} 
-            src={user.headurl} 
+            {...getSafeAvatarProps(user.headurl)}
             icon={<UserOutlined />}
           />
           <span>用户详情 - {user.nickname || `用户${user.userid}`}</span>
@@ -82,7 +83,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
         <Descriptions.Item label="头像" span={1}>
           <Avatar 
             size={48} 
-            src={user.headurl} 
+            {...getSafeAvatarProps(user.headurl)}
             icon={<UserOutlined />}
           />
         </Descriptions.Item>

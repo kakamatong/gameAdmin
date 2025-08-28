@@ -30,6 +30,11 @@
    Warning: [antd: message] Static function can not consume context like dynamic theme. Please use 'App' component instead.
    ```
 
+6. **Avatar 组件空 src 属性警告**：
+   ```
+   An empty string ("") was passed to the src attribute. This may cause the browser to download the whole page again over the network.
+   ```
+
 ## 解决方案
 
 ### 1. 修复 Ant Design Spin 组件警告
@@ -222,6 +227,41 @@ const Component = () => {
 - `/root/gameAdmin/src/pages/mails/MailManagement.tsx`
 - `/root/gameAdmin/src/pages/mails/components/SendMailModal.tsx`
 
+### 6. 修复 Avatar 组件空 src 属性警告
+
+**问题原因**：
+- Avatar 组件直接使用空字符串或 undefined 值作为 src 属性
+- 空字符串作为 src 属性会导致浏览器重新下载整个页面
+
+**解决方法**：
+使用项目中已有的 `getSafeAvatarProps` 函数来安全处理头像 URL：
+
+```tsx
+// 修改前（错误方式）
+<Avatar 
+  size={48} 
+  src={user.headurl} 
+  icon={<UserOutlined />}
+/>
+
+// 修改后（正确方式）
+import { getSafeAvatarProps } from '@/utils/react19Compatibility';
+
+<Avatar 
+  size={48} 
+  {...getSafeAvatarProps(user.headurl)}
+  icon={<UserOutlined />}
+/>
+```
+
+**getSafeAvatarProps 函数功能**：
+- 自动检测空值（null、undefined、空字符串）
+- 空值时返回安全的 props（不包含 src 属性）
+- 有效 URL 时返回正确的 src 属性
+
+**修改的文件**：
+- `/root/gameAdmin/src/pages/users/components/UserDetailModal.tsx`
+
 ## 验证结果
 
 ### 1. Spin 组件警告已解决
@@ -243,6 +283,12 @@ const Component = () => {
 - Form 组件正常工作，所有 form 实例访问都在组件内部
 
 ### 5. message 静态 API 警告已解决
+- 不再出现 `Static function can not consume context` 警告
+- 所有 message 调用都使用 useMessage hook，支持动态主题
+
+### 6. Avatar 组件警告已解决
+- 不再出现空 src 属性警告
+- 所有 Avatar 组件都使用 getSafeAvatarProps 安全处理头像 URL
 - 不再出现 `Static function can not consume context` 警告
 - 所有 message 调用都使用 useMessage hook，支持动态主题
 - 不再出现 `Instance created by useForm is not connected` 警告
