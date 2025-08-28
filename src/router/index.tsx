@@ -9,6 +9,7 @@ import { MainLayout } from '@/components/layout';
 import { LoginPage } from '@/pages/auth';
 import { UserManagement } from '@/pages/users';
 import { MailManagement } from '@/pages/mails';
+import { ProfilePage } from '@/pages/profile';
 import DashboardPage from '@/pages/dashboard/DashboardPage';
 
 // 创建路由配置
@@ -57,6 +58,10 @@ export const router = createBrowserRouter([
       {
         path: 'mails',
         element: <MailManagement />,
+      },
+      {
+        path: 'profile',
+        element: <ProfilePage />,
       },
       {
         path: 'admin',

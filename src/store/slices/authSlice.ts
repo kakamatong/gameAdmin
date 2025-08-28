@@ -97,6 +97,12 @@ const authSlice = createSlice({
       localStorage.removeItem('adminInfo');
     },
     
+    // 设置管理员信息
+    setAdminInfo: (state, action: PayloadAction<AdminInfo>) => {
+      state.adminInfo = action.payload;
+      localStorage.setItem('adminInfo', JSON.stringify(action.payload));
+    },
+    
     // 从localStorage恢复状态
     restoreAuth: (state) => {
       const token = localStorage.getItem('adminToken');
@@ -176,5 +182,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, setAuth, clearAuth, restoreAuth } = authSlice.actions;
+export const { clearError, setAuth, clearAuth, setAdminInfo, restoreAuth } = authSlice.actions;
 export default authSlice.reducer;

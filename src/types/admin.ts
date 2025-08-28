@@ -44,6 +44,16 @@ export interface CreateAdminRequest {
   note?: string;
 }
 
+// 管理员信息更新请求
+export interface AdminUpdateRequest {
+  email?: string;
+  mobile?: string;
+  realName?: string;
+  avatar?: string;
+  departmentId?: number;
+  note?: string;
+}
+
 // JWT Token Claims
 export interface AdminJWTClaims {
   adminId: number;

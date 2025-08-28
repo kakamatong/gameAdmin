@@ -1,0 +1,108 @@
+/**
+ * 个人信息页面样式
+ */
+
+.profile-page {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .profile-card {
+    margin-bottom: 24px;
+    
+    .profile-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      
+      .profile-avatar {
+        flex-shrink: 0;
+      }
+      
+      .profile-basic {
+        flex: 1;
+        
+        .profile-name {
+          margin-bottom: 12px;
+          
+          .username {
+            margin-left: 8px;
+            font-size: 14px;
+          }
+        }
+        
+        .profile-badges {
+          .ant-tag {
+            margin-right: 8px;
+          }
+        }
+      }
+      
+      .profile-actions {
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  .profile-details,
+  .profile-login,
+  .profile-history {
+    margin-bottom: 24px;
+    
+    .ant-descriptions-item-label {
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.85);
+      
+      .anticon {
+        margin-right: 4px;
+        color: #1890ff;
+      }
+    }
+    
+    .ant-descriptions-item-content {
+      color: rgba(0, 0, 0, 0.65);
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .profile-page {
+    padding: 16px;
+    
+    .profile-card {
+      .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 16px;
+        
+        .profile-basic {
+          .profile-name {
+            text-align: center;
+          }
+        }
+      }
+    }
+    
+    .ant-descriptions {
+      .ant-descriptions-item {
+        padding-bottom: 16px;
+      }
+    }
+  }
+}
+
+// 头像上传区域样式优化
+.ant-upload {
+  .ant-btn {
+    border-radius: 6px;
+  }
+}
+
+// 状态标签样式
+.ant-tag {
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 12px;
+}

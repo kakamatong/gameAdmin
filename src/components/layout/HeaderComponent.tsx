@@ -48,8 +48,7 @@ const HeaderComponent: React.FC = () => {
       icon: <UserOutlined />,
       label: '个人信息',
       onClick: () => {
-        // 跳转到个人信息页面
-        console.log('跳转到个人信息页面');
+        navigate('/profile');
       },
     },
     {
