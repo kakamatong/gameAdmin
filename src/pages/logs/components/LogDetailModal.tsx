@@ -6,6 +6,7 @@ import React from 'react';
 import { Modal, Descriptions, Tag, Typography } from 'antd';
 import dayjs from 'dayjs';
 import type { LoginLogItem, GameLogItem } from '@/types/log';
+import './LogDetailModal.less';
 
 const { Text } = Typography;
 
@@ -145,6 +146,7 @@ const LogDetailModal: React.FC<LogDetailModalProps> = ({
       footer={null}
       width={800}
       maskClosable={false}
+      className="log-detail-modal"
     >
       {logType === 'login' 
         ? renderLoginLogDetails(logData as LoginLogItem)
