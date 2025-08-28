@@ -14,11 +14,14 @@ import {
   Col,
   Space,
   Button,
+  DatePicker,
 } from 'antd';
 import { useAppDispatch } from '@/store';
 import { updateUserAsync } from '@/store/slices/userSlice';
 import { useMessage } from '@/utils/message';
+import { Gender, getGenderText } from '@/types/enums';
 import type { UserInfo, UserUpdateRequest, UserRich } from '@/types';
+import dayjs from 'dayjs';
 
 const { Option } = Select;
 
@@ -31,8 +34,12 @@ interface UserEditModalProps {
 
 interface FormValues {
   nickname: string;
+  sex: number;
+  province: string;
+  city: string;
   status: number;
   riches: UserRich[];
+  createTime: dayjs.Dayjs;
 }
 
 const UserEditModal: React.FC<UserEditModalProps> = ({
@@ -49,11 +56,19 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
   // 初始化表单数据
   useEffect(() => {
     if (visible && user) {
+      console.log('初始化表单数据:', user);
       form.setFieldsValue({
-        nickname: user.nickname,
+        nickname: user.nickname || '',
+        sex: user.sex ?? 0,
+        province: user.province || '',
+        city: user.city || '',
         status: user.status,
         riches: user.riches || [],
+        createTime: user.createTime ? dayjs(user.createTime) : dayjs(),
       });
+    } else if (!visible) {
+      // 关闭模态框时重置表单
+      form.resetFields();
     }
   }, [visible, user, form]);
 
@@ -65,9 +80,15 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
     try {
       const updateData: UserUpdateRequest = {
         nickname: values.nickname !== user.nickname ? values.nickname : undefined,
+        sex: values.sex !== user.sex ? values.sex : undefined,
+        province: values.province !== user.province ? values.province : undefined,
+        city: values.city !== user.city ? values.city : undefined,
         status: values.status !== user.status ? values.status : undefined,
         riches: JSON.stringify(values.riches) !== JSON.stringify(user.riches) 
           ? values.riches 
+          : undefined,
+        createTime: values.createTime.toISOString() !== user.createTime 
+          ? values.createTime.toISOString() 
           : undefined,
       };
 
@@ -81,6 +102,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
         return;
       }
 
+      console.log('更新用户数据:', filteredData);
       await dispatch(updateUserAsync({ 
         userId: user.userid, 
         data: filteredData 
@@ -109,19 +131,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
       open={visible}
       onCancel={handleCancel}
       width={700}
-      footer={[
-        <Button key="cancel" onClick={handleCancel}>
-          取消
-        </Button>,
-        <Button 
-          key="submit" 
-          type="primary" 
-          loading={loading}
-          onClick={() => form.submit()}
-        >
-          保存
-        </Button>,
-      ]}
+      footer={null}
     >
       <Form
         form={form}
@@ -144,6 +154,44 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
           </Col>
           <Col span={12}>
             <Form.Item
+              label="性别"
+              name="sex"
+              rules={[{ required: true, message: '请选择性别' }]}
+            >
+              <Select placeholder="请选择性别">
+                <Option value={Gender.UNKNOWN}>{getGenderText(Gender.UNKNOWN)}</Option>
+                <Option value={Gender.MALE}>{getGenderText(Gender.MALE)}</Option>
+                <Option value={Gender.FEMALE}>{getGenderText(Gender.FEMALE)}</Option>
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={16}>
+          <Col span={8}>
+            <Form.Item
+              label="省份"
+              name="province"
+              rules={[
+                { max: 50, message: '省份名称不能超过50个字符' },
+              ]}
+            >
+              <Input placeholder="请输入省份" />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item
+              label="城市"
+              name="city"
+              rules={[
+                { max: 50, message: '城市名称不能超过50个字符' },
+              ]}
+            >
+              <Input placeholder="请输入城市" />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item
               label="状态"
               name="status"
               rules={[{ required: true, message: '请选择用户状态' }]}
@@ -151,7 +199,25 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
               <Select placeholder="请选择用户状态">
                 <Option value={1}>正常</Option>
                 <Option value={0}>禁用</Option>
+                <Option value={2}>封禁</Option>
               </Select>
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="注册时间"
+              name="createTime"
+              rules={[{ required: true, message: '请选择注册时间' }]}
+            >
+              <DatePicker
+                style={{ width: '100%' }}
+                showTime={{ format: 'HH:mm:ss' }}
+                format="YYYY-MM-DD HH:mm:ss"
+                placeholder="请选择注册时间"
+              />
             </Form.Item>
           </Col>
         </Row>
@@ -222,6 +288,22 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
             )}
           </Form.List>
         </Card>
+
+        {/* 表单按钮区域 - 移到Form内部 */}
+        <Form.Item style={{ marginTop: 24, marginBottom: 0 }}>
+          <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
+            <Button onClick={handleCancel}>
+              取消
+            </Button>
+            <Button 
+              type="primary" 
+              loading={loading}
+              htmlType="submit"
+            >
+              保存
+            </Button>
+          </Space>
+        </Form.Item>
       </Form>
     </Modal>
   );

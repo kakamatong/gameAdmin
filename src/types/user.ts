@@ -41,8 +41,12 @@ export interface UserListResponse {
 // 用户信息更新请求
 export interface UserUpdateRequest {
   nickname?: string;
+  sex?: number;
+  province?: string;
+  city?: string;
   status?: number;
   riches?: UserRich[];
+  createTime?: string;
 }
 
 // 注意：用户状态、性别和财富类型枚举已移至 ./enums.ts 文件统一管理
