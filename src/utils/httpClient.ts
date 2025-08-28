@@ -4,8 +4,47 @@
 
 import axios from 'axios';
 import type { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { message } from 'antd';
 import type { BaseResponse, ApiError } from '@/types';
+
+// 全局消息通知函数变量
+let globalMessage: any = null;
+
+// 设置全局消息通知函数
+export const setGlobalMessage = (messageApi: any) => {
+  globalMessage = messageApi;
+};
+
+// 安全的消息通知函数
+const safeMessage = {
+  success: (content: string) => {
+    if (globalMessage?.success) {
+      globalMessage.success(content);
+    } else {
+      console.log('[Success]', content);
+    }
+  },
+  error: (content: string) => {
+    if (globalMessage?.error) {
+      globalMessage.error(content);
+    } else {
+      console.error('[Error]', content);
+    }
+  },
+  warning: (content: string) => {
+    if (globalMessage?.warning) {
+      globalMessage.warning(content);
+    } else {
+      console.warn('[Warning]', content);
+    }
+  },
+  info: (content: string) => {
+    if (globalMessage?.info) {
+      globalMessage.info(content);
+    } else {
+      console.info('[Info]', content);
+    }
+  },
+};
 
 // 创建axios实例
 const httpClient = axios.create({
@@ -53,7 +92,7 @@ httpClient.interceptors.response.use(
     
     // 业务错误
     const errorMessage = msg || '请求失败';
-    message.error(errorMessage);
+    safeMessage.error(errorMessage);
     
     const error: ApiError = {
       code,
@@ -76,31 +115,31 @@ httpClient.interceptors.response.use(
           localStorage.removeItem('adminToken');
           localStorage.removeItem('adminInfo');
           window.location.href = '/login';
-          message.error('登录已过期，请重新登录');
+          safeMessage.error('登录已过期，请重新登录');
           break;
           
         case 403:
-          message.error('权限不足，无法执行此操作');
+          safeMessage.error('权限不足，无法执行此操作');
           break;
           
         case 404:
-          message.error('请求的资源不存在');
+          safeMessage.error('请求的资源不存在');
           break;
           
         case 429:
-          message.error('操作过于频繁，请稍后重试');
+          safeMessage.error('操作过于频繁，请稍后重试');
           break;
           
         case 500:
         case 502:
         case 503:
         case 504:
-          message.error('服务器错误，请稍后重试');
+          safeMessage.error('服务器错误，请稍后重试');
           break;
           
         default:
           const errorMsg = (data as any)?.message || error.message || '网络错误';
-          message.error(errorMsg);
+          safeMessage.error(errorMsg);
       }
       
       const apiError: ApiError = {
@@ -112,7 +151,7 @@ httpClient.interceptors.response.use(
       return Promise.reject(apiError);
     } else if (error.request) {
       // 网络错误
-      message.error('网络连接失败，请检查网络状态');
+      safeMessage.error('网络连接失败，请检查网络状态');
       return Promise.reject({
         code: -1,
         message: '网络连接失败',
@@ -120,7 +159,7 @@ httpClient.interceptors.response.use(
       });
     } else {
       // 其他错误
-      message.error(error.message || '未知错误');
+      safeMessage.error(error.message || '未知错误');
       return Promise.reject({
         code: -1,
         message: error.message || '未知错误',

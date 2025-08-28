@@ -218,7 +218,7 @@ const UserManagement: React.FC = () => {
       <Title level={2}>用户管理</Title>
       
       {/* 搜索表单 */}
-      <Card className="search-card" bordered={false}>
+      <Card className="search-card" variant="borderless">
         <Form
           form={form}
           layout="inline"
@@ -266,7 +266,7 @@ const UserManagement: React.FC = () => {
       </Card>
 
       {/* 用户表格 */}
-      <Card bordered={false}>
+      <Card variant="borderless">
         <Table<UserInfo>
           columns={columns}
           dataSource={userList}

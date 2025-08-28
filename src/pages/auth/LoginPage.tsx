@@ -3,11 +3,12 @@
  */
 
 import React, { useEffect } from 'react';
-import { Form, Input, Button, Card, Typography, Row, Col, message } from 'antd';
+import { Form, Input, Button, Card, Typography, Row, Col } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { loginAsync } from '@/store/slices/authSlice';
+import { useMessage } from '@/utils/message';
 import type { AdminLoginRequest } from '@/types';
 import './LoginPage.less';
 
@@ -17,6 +18,7 @@ const LoginPage: React.FC = () => {
   const [form] = Form.useForm<AdminLoginRequest>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const message = useMessage();
   
   const { loading, isAuthenticated, error } = useAppSelector(state => state.auth);
 

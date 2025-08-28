@@ -311,7 +311,7 @@ const MailManagement: React.FC = () => {
       )}
       
       {/* 搜索表单 */}
-      <Card className="search-card" bordered={false}>
+      <Card className="search-card" variant="borderless">
         <Form
           form={form}
           layout="inline"
@@ -366,7 +366,7 @@ const MailManagement: React.FC = () => {
       </Card>
 
       {/* 邮件表格 */}
-      <Card bordered={false}>
+      <Card variant="borderless">
         <div style={{ marginBottom: 16 }}>
           <Button
             type="primary"

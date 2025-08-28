@@ -78,7 +78,7 @@ const DashboardPage: React.FC = () => {
 
       <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
         <Col xs={24} lg={12}>
-          <Card title="系统概览" bordered={false}>
+          <Card title="系统概览" variant="borderless">
             <p>欢迎使用游戏管理后台系统！</p>
             <p>您可以通过左侧导航菜单访问各项功能：</p>
             <ul>
@@ -91,7 +91,7 @@ const DashboardPage: React.FC = () => {
         </Col>
 
         <Col xs={24} lg={12}>
-          <Card title="快捷操作" bordered={false}>
+          <Card title="快捷操作" variant="borderless">
             <p>常用功能快捷入口：</p>
             <ul>
               <li><a href="/users">用户列表</a> - 查看所有用户</li>

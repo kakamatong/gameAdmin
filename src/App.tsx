@@ -5,11 +5,12 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { ConfigProvider, Spin } from 'antd';
+import { ConfigProvider, Spin, App as AntdApp } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import { store } from '@/store';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { restoreAuth } from '@/store/slices/authSlice';
+import { setGlobalMessage } from '@/utils/httpClient';
 import { LoginPage } from '@/pages/auth';
 import { DashboardPage } from '@/pages/dashboard';
 import 'dayjs/locale/zh-cn';
@@ -56,6 +57,18 @@ const AppContent: React.FC = () => {
   return <DashboardPage />;
 };
 
+// 内部应用组件，用于获取 message API
+const InnerApp: React.FC = () => {
+  const { message } = AntdApp.useApp();
+  
+  useEffect(() => {
+    // 设置全局 message API
+    setGlobalMessage(message);
+  }, [message]);
+  
+  return <AppContent />;
+};
+
 // 主应用组件
 const App: React.FC = () => {
   return (
@@ -70,18 +83,20 @@ const App: React.FC = () => {
             },
           }}
         >
-          <React.Suspense fallback={
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '100vh'
-            }}>
-              <Spin size="large" tip="加载中..." />
-            </div>
-          }>
-            <AppContent />
-          </React.Suspense>
+          <AntdApp>
+            <React.Suspense fallback={
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh'
+              }}>
+                <Spin size="large" tip="加载中..." />
+              </div>
+            }>
+              <InnerApp />
+            </React.Suspense>
+          </AntdApp>
         </ConfigProvider>
       </BrowserRouter>
     </Provider>
