@@ -17,6 +17,7 @@ import { useAppDispatch, useAppSelector } from '@/store';
 import { toggleSidebar } from '@/store/slices/uiSlice';
 import { logoutAsync } from '@/store/slices/authSlice';
 import { useAuth } from '@/hooks/useAuth';
+import { getSafeAvatarProps } from '@/utils/react19Compatibility';
 
 const { Header } = Layout;
 const { Text } = Typography;
@@ -102,7 +103,7 @@ const HeaderComponent: React.FC = () => {
                 <Avatar 
                   size="small" 
                   icon={<UserOutlined />}
-                  src={adminInfo?.avatar}
+                  {...getSafeAvatarProps(adminInfo?.avatar)}
                   style={{ cursor: 'pointer' }}
                 />
               </div>

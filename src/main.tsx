@@ -1,7 +1,11 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
+import { setupReact19Compatibility } from './utils/react19Compatibility';
 import './index.css';
+
+// 设置 React 19 兼容性
+setupReact19Compatibility();
 
 // 添加错误处理
 window.addEventListener('error', (e) => {
@@ -28,7 +32,7 @@ if (rootElement) {
     rootElement.innerHTML = `
       <div style="padding: 20px; color: red; font-family: Arial;">
         <h1>React加载失败</h1>
-        <p>错误信息: ${error.message}</p>
+        <p>错误信息: ${(error as Error).message}</p>
         <p>请检查浏览器控制台获取更多信息。</p>
       </div>
     `;
