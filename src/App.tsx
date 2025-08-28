@@ -9,6 +9,7 @@ import { RouterProvider } from 'react-router-dom';
 import zhCN from 'antd/locale/zh_CN';
 import { store } from '@/store';
 import { setGlobalMessage } from '@/utils/httpClient';
+import { setupReact19Compatibility } from '@/utils/react19Compatibility';
 import { router } from '@/router';
 import 'dayjs/locale/zh-cn';
 import './App.css';
@@ -16,6 +17,9 @@ import './App.css';
 // 设置dayjs为中文
 import dayjs from 'dayjs';
 dayjs.locale('zh-cn');
+
+// 初始化 React 19 兼容性处理
+setupReact19Compatibility();
 
 // 内部应用组件，用于获取 message API
 const InnerApp: React.FC = () => {

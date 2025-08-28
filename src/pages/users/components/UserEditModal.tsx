@@ -55,20 +55,44 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
 
   // 初始化表单数据
   useEffect(() => {
+    console.log('UserEditModal useEffect 触发:', { visible, user: user?.userid });
+    
     if (visible && user) {
-      console.log('初始化表单数据:', user);
-      form.setFieldsValue({
-        nickname: user.nickname || '',
-        sex: user.sex ?? 0,
-        province: user.province || '',
-        city: user.city || '',
-        status: user.status,
-        riches: user.riches || [],
-        createTime: user.createTime ? dayjs(user.createTime) : dayjs(),
+      console.log('完整的用户数据结构:', user);
+      console.log('user.riches 详细信息:', {
+        riches: user.riches,
+        type: typeof user.riches,
+        isArray: Array.isArray(user.riches),
+        length: user.riches?.length,
+        stringified: JSON.stringify(user.riches)
       });
+      
+      // 使用setTimeout确保Form组件完全挂载后再设置表单值
+      const timer = setTimeout(() => {
+        const formData = {
+          nickname: user.nickname || '',
+          sex: user.sex ?? 0,
+          province: user.province || '',
+          city: user.city || '',
+          status: user.status,
+          riches: Array.isArray(user.riches) ? user.riches : [],
+          createTime: user.createTime ? dayjs(user.createTime) : dayjs(),
+        };
+        
+        console.log('即将设置的表单数据:', formData);
+        form.setFieldsValue(formData);
+        
+        // 验证设置是否成功
+        setTimeout(() => {
+          const currentValues = form.getFieldsValue();
+          console.log('设置后的表单值:', currentValues);
+        }, 50);
+      }, 100);
+      
+      return () => clearTimeout(timer);
     } else if (!visible) {
-      // 关闭模态框时重置表单
-      form.resetFields();
+      console.log('模态框关闭，重置表单');
+      // 关闭模态框时不重置表单，避免警告
     }
   }, [visible, user, form]);
 
@@ -119,7 +143,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
 
   // 处理取消
   const handleCancel = () => {
-    form.resetFields();
+    // 不在这里重置表单，避免useForm警告
     onClose();
   };
 
@@ -223,69 +247,80 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
         </Row>
 
         <Card title="财富信息" size="small">
-          <Form.List name="riches">
-            {(fields, { add, remove }) => (
-              <>
-                {fields.map(({ key, name, ...restField }) => (
-                  <Row key={key} gutter={16} align="middle">
-                    <Col span={8}>
-                      <Form.Item
-                        {...restField}
-                        name={[name, 'richType']}
-                        label="财富类型"
-                        rules={[{ required: true, message: '请选择财富类型' }]}
-                      >
-                        <Select placeholder="财富类型">
-                          <Option value={1}>钻石</Option>
-                          <Option value={2}>金币</Option>
-                          <Option value={3}>门票</Option>
-                          <Option value={4}>体力</Option>
-                          <Option value={5}>VIP经验</Option>
-                        </Select>
-                      </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                      <Form.Item
-                        {...restField}
-                        name={[name, 'richNums']}
-                        label="数量"
-                        rules={[
-                          { required: true, message: '请输入数量' },
-                          { type: 'number', min: 0, message: '数量不能为负数' },
-                        ]}
-                      >
-                        <InputNumber
-                          style={{ width: '100%' }}
-                          placeholder="请输入数量"
-                          min={0}
-                          precision={0}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={4}>
-                      <Button
-                        type="link"
-                        danger
-                        onClick={() => remove(name)}
-                        style={{ marginTop: 30 }}
-                      >
-                        删除
-                      </Button>
-                    </Col>
-                  </Row>
-                ))}
-                
-                <Form.Item>
-                  <Button
-                    type="dashed"
-                    onClick={() => add({ richType: 1, richNums: 0 })}
-                    block
-                  >
-                    添加财富类型
-                  </Button>
-                </Form.Item>
-              </>
-            )}
+          <Form.List 
+            name="riches"
+            initialValue={Array.isArray(user?.riches) ? user.riches : []}
+          >
+            {(fields, { add, remove }) => {
+              console.log('Form.List 渲染:', { fields, fieldsLength: fields.length });
+              
+              return (
+                <>
+                  {fields.map(({ key, name, ...restField }) => {
+                    console.log('渲染财富项:', { key, name, restField });
+                    
+                    return (
+                      <Row key={key} gutter={16} align="middle">
+                        <Col span={8}>
+                          <Form.Item
+                            {...restField}
+                            name={[name, 'richType']}
+                            label="财富类型"
+                            rules={[{ required: true, message: '请选择财富类型' }]}
+                          >
+                            <Select placeholder="财富类型">
+                              <Option value={1}>钻石</Option>
+                              <Option value={2}>金币</Option>
+                              <Option value={3}>门票</Option>
+                              <Option value={4}>体力</Option>
+                              <Option value={5}>VIP经验</Option>
+                            </Select>
+                          </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                          <Form.Item
+                            {...restField}
+                            name={[name, 'richNums']}
+                            label="数量"
+                            rules={[
+                              { required: true, message: '请输入数量' },
+                              { type: 'number', min: 0, message: '数量不能为负数' },
+                            ]}
+                          >
+                            <InputNumber
+                              style={{ width: '100%' }}
+                              placeholder="请输入数量"
+                              min={0}
+                              precision={0}
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col span={4}>
+                          <Button
+                            type="link"
+                            danger
+                            onClick={() => remove(name)}
+                            style={{ marginTop: 30 }}
+                          >
+                            删除
+                          </Button>
+                        </Col>
+                      </Row>
+                    );
+                  })}
+                  
+                  <Form.Item>
+                    <Button
+                      type="dashed"
+                      onClick={() => add({ richType: 1, richNums: 0 })}
+                      block
+                    >
+                      添加财富类型
+                    </Button>
+                  </Form.Item>
+                </>
+              );
+            }}
           </Form.List>
         </Card>
 
