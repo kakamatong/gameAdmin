@@ -20,6 +20,11 @@
    Warning: [antd: Modal] `destroyOnClose` is deprecated. Please use `destroyOnHidden` instead.
    ```
 
+4. **Ant Design Form 组件警告**：
+   ```
+   Warning: Instance created by `useForm` is not connected to any Form element. Forget to pass `form` prop?
+   ```
+
 ## 解决方案
 
 ### 1. 修复 Ant Design Spin 组件警告
@@ -131,6 +136,46 @@
 **修改的文件**：
 - `/root/gameAdmin/src/pages/profile/AdminEditModal.tsx`
 
+### 4. 修复 Ant Design Form 组件警告
+
+**问题原因**：
+- 在 Form 组件外部直接调用 `form.getFieldValue()` 等方法
+- 这会导致 React 认为 form 实例没有正确连接到 Form 组件
+
+**解决方法**：
+将对 form 实例的访问移到 Form 组件内部，使用 `shouldUpdate` 和 render function 模式：
+
+```tsx
+// 修改前（错误方式）
+<Form form={form}>
+  {/* Form items */}
+</Form>
+{(!form.getFieldValue('awards') || form.getFieldValue('awards').length === 0) && (
+  <Text type="secondary">如果不添加奖励，将发送纯文本邮件</Text>
+)}
+
+// 修改后（正确方式）
+<Form form={form}>
+  {/* Form items */}
+  <Form.Item
+    noStyle
+    shouldUpdate={(prevValues, currentValues) => 
+      prevValues.awards !== currentValues.awards
+    }
+  >
+    {({ getFieldValue }) => {
+      const awards = getFieldValue('awards');
+      return (!awards || awards.length === 0) ? (
+        <Text type="secondary">如果不添加奖励，将发送纯文本邮件</Text>
+      ) : null;
+    }}
+  </Form.Item>
+</Form>
+```
+
+**修改的文件**：
+- `/root/gameAdmin/src/pages/mails/components/SendMailModal.tsx`
+
 ## 验证结果
 
 ### 1. Spin 组件警告已解决
@@ -144,6 +189,12 @@
 - 代理转发 `/api/*` 请求到后端服务器
 
 ### 3. Modal 组件警告已解决
+- 不再出现 `[antd: Modal] destroyOnClose is deprecated` 警告
+- Modal 组件正常工作，使用新的 `destroyOnHidden` 属性
+
+### 4. Form 组件警告已解决
+- 不再出现 `Instance created by useForm is not connected` 警告
+- Form 组件正常工作，所有 form 实例访问都在组件内部
 - 不再出现 `[antd: Modal] destroyOnClose is deprecated` 警告
 - Modal 组件正常工作，使用新的 `destroyOnHidden` 属性
 - API 代理工作正常

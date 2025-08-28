@@ -289,15 +289,25 @@ const SendMailModal: React.FC<SendMailModalProps> = ({
                     添加奖励
                   </Button>
                 </Form.Item>
+                
+                <Form.Item
+                  noStyle
+                  shouldUpdate={(prevValues, currentValues) => 
+                    prevValues.awards !== currentValues.awards
+                  }
+                >
+                  {({ getFieldValue }) => {
+                    const awards = getFieldValue('awards');
+                    return (!awards || awards.length === 0) ? (
+                      <Text type="secondary" style={{ fontSize: '12px' }}>
+                        如果不添加奖励，将发送纯文本邮件
+                      </Text>
+                    ) : null;
+                  }}
+                </Form.Item>
               </>
             )}
           </Form.List>
-          
-          {(!form.getFieldValue('awards') || form.getFieldValue('awards').length === 0) && (
-            <Text type="secondary" style={{ fontSize: '12px' }}>
-              如果不添加奖励，将发送纯文本邮件
-            </Text>
-          )}
         </Card>
       </Form>
     </Modal>
