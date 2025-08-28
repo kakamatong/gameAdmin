@@ -10,6 +10,8 @@ import { LoginPage } from '@/pages/auth';
 import { UserManagement } from '@/pages/users';
 import { MailManagement } from '@/pages/mails';
 import { ProfilePage } from '@/pages/profile';
+import { LoginLogsPage, GameLogsPage } from '@/pages/logs';
+import LogTestPage from '@/pages/logs/LogTestPage';
 import DashboardPage from '@/pages/dashboard/DashboardPage';
 
 // 创建路由配置
@@ -43,15 +45,19 @@ export const router = createBrowserRouter([
         children: [
           {
             path: 'login',
-            element: <div>登录日志页面（待实现）</div>,
+            element: <LoginLogsPage />,
           },
           {
             path: 'game',
-            element: <div>对局日志页面（待实现）</div>,
+            element: <GameLogsPage />,
           },
           {
             path: 'stats',
             element: <div>统计分析页面（待实现）</div>,
+          },
+          {
+            path: 'test',
+            element: <LogTestPage />,
           },
         ],
       },

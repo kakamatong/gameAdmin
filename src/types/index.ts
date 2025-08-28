@@ -54,8 +54,8 @@ export interface UserState {
 
 // 日志状态
 export interface LogState {
-  loginLogs: import('./log').LoginLogItem[];
-  gameLogs: import('./log').GameLogItem[];
+  loginLogs: import('./log').LoginLogsResponse;
+  gameLogs: import('./log').GameLogsResponse;
   loginStats: import('./log').LoginStats | null;
   gameStats: import('./log').GameStats | null;
   loading: boolean;

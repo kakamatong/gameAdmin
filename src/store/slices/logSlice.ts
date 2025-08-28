@@ -13,8 +13,18 @@ import type {
 
 // 初始状态
 const initialState: LogState = {
-  loginLogs: [],
-  gameLogs: [],
+  loginLogs: {
+    data: [],
+    total: 0,
+    page: 1,
+    pageSize: 20,
+  },
+  gameLogs: {
+    data: [],
+    total: 0,
+    page: 1,
+    pageSize: 20,
+  },
   loginStats: null,
   gameStats: null,
   loading: false,
@@ -48,7 +58,7 @@ export const getGameLogsAsync = createAsyncThunk(
 
 export const getLoginStatsAsync = createAsyncThunk(
   'log/getLoginStats',
-  async (userId?: number, { rejectWithValue }) => {
+  async (userId: number | undefined, { rejectWithValue }) => {
     try {
       const stats = await logService.getLoginStats(userId);
       return stats;
@@ -60,7 +70,7 @@ export const getLoginStatsAsync = createAsyncThunk(
 
 export const getGameStatsAsync = createAsyncThunk(
   'log/getGameStats',
-  async (userId?: number, { rejectWithValue }) => {
+  async (userId: number | undefined, { rejectWithValue }) => {
     try {
       const stats = await logService.getGameStats(userId);
       return stats;
@@ -82,12 +92,22 @@ const logSlice = createSlice({
     
     // 清除登录日志
     clearLoginLogs: (state) => {
-      state.loginLogs = [];
+      state.loginLogs = {
+        data: [],
+        total: 0,
+        page: 1,
+        pageSize: 20,
+      };
     },
     
     // 清除对局日志
     clearGameLogs: (state) => {
-      state.gameLogs = [];
+      state.gameLogs = {
+        data: [],
+        total: 0,
+        page: 1,
+        pageSize: 20,
+      };
     },
     
     // 清除统计数据
@@ -105,7 +125,7 @@ const logSlice = createSlice({
       })
       .addCase(getLoginLogsAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.loginLogs = action.payload.data;
+        state.loginLogs = action.payload;
         state.error = null;
       })
       .addCase(getLoginLogsAsync.rejected, (state, action) => {
@@ -121,7 +141,7 @@ const logSlice = createSlice({
       })
       .addCase(getGameLogsAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.gameLogs = action.payload.data;
+        state.gameLogs = action.payload;
         state.error = null;
       })
       .addCase(getGameLogsAsync.rejected, (state, action) => {
