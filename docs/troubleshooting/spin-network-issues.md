@@ -2,7 +2,7 @@
 
 ## 问题描述
 
-用户遇到以下两个错误：
+用户遇到以下错误：
 
 1. **Ant Design Spin 组件警告**：
    ```
@@ -13,6 +13,11 @@
    ```
    Response error: AxiosError {message: 'Network Error', name: 'AxiosError', code: 'ERR_NETWORK'}
    Failed to load resource: net::ERR_CONNECTION_REFUSED
+   ```
+
+3. **Ant Design Modal 组件警告**：
+   ```
+   Warning: [antd: Modal] `destroyOnClose` is deprecated. Please use `destroyOnHidden` instead.
    ```
 
 ## 解决方案
@@ -92,6 +97,40 @@
 3. **重启开发服务器**：
    确保环境变量生效和端口正确分配
 
+### 3. 修复 Ant Design Modal 组件警告
+
+**问题原因**：
+- Ant Design 新版本中 `destroyOnClose` 属性已被弃用
+- 需要使用 `destroyOnHidden` 属性替代
+
+**解决方法**：
+更新 Modal 组件的属性：
+
+```tsx
+// 修改前（过时方式）
+<Modal
+  title="编辑个人信息"
+  open={visible}
+  onCancel={onCancel}
+  footer={null}
+  width={600}
+  destroyOnClose
+>
+
+// 修改后（新方式）
+<Modal
+  title="编辑个人信息"
+  open={visible}
+  onCancel={onCancel}
+  footer={null}
+  width={600}
+  destroyOnHidden
+>
+```
+
+**修改的文件**：
+- `/root/gameAdmin/src/pages/profile/AdminEditModal.tsx`
+
 ## 验证结果
 
 ### 1. Spin 组件警告已解决
@@ -99,6 +138,14 @@
 - 加载提示正常显示
 
 ### 2. 网络连接已恢复
+- API 代理工作正常
+- 前端服务器在 http://localhost:3000 正常运行
+- 后端服务器在 http://localhost:8080 正常运行
+- 代理转发 `/api/*` 请求到后端服务器
+
+### 3. Modal 组件警告已解决
+- 不再出现 `[antd: Modal] destroyOnClose is deprecated` 警告
+- Modal 组件正常工作，使用新的 `destroyOnHidden` 属性
 - API 代理工作正常
 - 前端服务器在 http://localhost:3000 正常运行
 - 后端服务器在 http://localhost:8080 正常运行
