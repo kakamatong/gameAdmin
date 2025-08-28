@@ -48,10 +48,10 @@ const UserManagement: React.FC = () => {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserInfo | null>(null);
 
-  // 初始加载数据
-  useEffect(() => {
-    handleSearch();
-  }, []);
+  // 不再自动加载数据，需要用户主动搜索
+  // useEffect(() => {
+  //   handleSearch();
+  // }, []);
 
   // 获取用户列表
   const handleSearch = async (params?: Partial<UserListRequest>) => {
@@ -67,6 +67,12 @@ const UserManagement: React.FC = () => {
 
   // 搜索表单提交
   const onSearch = (values: any) => {
+    // 检查是否有搜索条件
+    if (!values.keyword && !values.userid) {
+      message.warning('请输入搜索条件（昵称或用户ID）');
+      return;
+    }
+    
     const params: Partial<UserListRequest> = {
       page: 1,
       keyword: values.keyword || undefined,
@@ -78,7 +84,10 @@ const UserManagement: React.FC = () => {
   // 重置搜索
   const onReset = () => {
     form.resetFields();
-    handleSearch({ page: 1, keyword: undefined, userid: undefined });
+    // 清空搜索结果，不自动查询
+    setSearchParams({ page: 1, pageSize: 20 });
+    // 可以选择清空表格数据或保持现有数据
+    // 这里选择保持现有数据，用户可以重新搜索
   };
 
   // 查看用户详情
@@ -254,7 +263,15 @@ const UserManagement: React.FC = () => {
                 </Button>
                 <Button
                   icon={<ReloadOutlined />}
-                  onClick={() => handleSearch({ page: 1 })}
+                  onClick={() => {
+                    // 只有在有搜索条件时才刷新
+                    const formValues = form.getFieldsValue();
+                    if (formValues.keyword || formValues.userid) {
+                      handleSearch({ page: 1 });
+                    } else {
+                      message.warning('请先输入搜索条件再刷新');
+                    }
+                  }}
                   loading={loading}
                 >
                   刷新
@@ -267,11 +284,31 @@ const UserManagement: React.FC = () => {
 
       {/* 用户表格 */}
       <Card variant="borderless">
+        {userList.length === 0 && !loading && (
+          <div style={{ 
+            textAlign: 'center', 
+            padding: '40px 0', 
+            color: '#999',
+            backgroundColor: '#fafafa',
+            border: '1px dashed #d9d9d9',
+            borderRadius: '8px',
+            marginBottom: '16px'
+          }}>
+            <UserOutlined style={{ fontSize: '48px', marginBottom: '16px', display: 'block' }} />
+            <p style={{ fontSize: '16px', margin: 0 }}>请输入搜索条件查看用户数据</p>
+            <p style={{ fontSize: '14px', margin: '8px 0 0 0' }}>支持按昵称或用户ID搜索</p>
+          </div>
+        )}
         <Table<UserInfo>
           columns={columns}
           dataSource={userList}
           rowKey="userid"
           loading={loading}
+          locale={{
+            emptyText: userList.length === 0 && !loading ? 
+              '请使用上方搜索功能查找用户' : 
+              '暂无数据'
+          }}
           pagination={{
             current: searchParams.page,
             pageSize: searchParams.pageSize,
