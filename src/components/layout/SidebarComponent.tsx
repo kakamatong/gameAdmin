@@ -11,7 +11,7 @@ import {
   MailOutlined,
   SettingOutlined,
   LineChartOutlined,
-  GamepadOutlined,
+  TrophyOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppSelector } from '@/store';
@@ -78,7 +78,7 @@ const SidebarComponent: React.FC = () => {
     
     createMenuItem('logs', <FileTextOutlined />, '日志查询', [
       createMenuItem('login-logs', <UserOutlined />, '登录日志', undefined, 'log'),
-      createMenuItem('game-logs', <GamepadOutlined />, '对局日志', undefined, 'log'),
+      createMenuItem('game-logs', <TrophyOutlined />, '对局日志', undefined, 'log'),
       createMenuItem('log-stats', <LineChartOutlined />, '统计分析', undefined, 'log'),
     ], 'log'),
     
