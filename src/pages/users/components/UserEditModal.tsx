@@ -14,10 +14,10 @@ import {
   Col,
   Space,
   Button,
-  message,
 } from 'antd';
 import { useAppDispatch } from '@/store';
 import { updateUserAsync } from '@/store/slices/userSlice';
+import { useMessage } from '@/utils/message';
 import type { UserInfo, UserUpdateRequest, UserRich } from '@/types';
 
 const { Option } = Select;
@@ -41,6 +41,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
   onClose,
   onSuccess,
 }) => {
+  const message = useMessage();
   const [form] = Form.useForm<FormValues>();
   const dispatch = useAppDispatch();
   const [loading, setLoading] = React.useState(false);

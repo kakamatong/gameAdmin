@@ -14,7 +14,6 @@ import {
   Space,
   Tag,
   Modal,
-  message,
   Tooltip,
   Typography,
 } from 'antd';
@@ -29,6 +28,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { getUserListAsync, setCurrentUser } from '@/store/slices/userSlice';
 import { getGenderText, getUserStatusText, RichType } from '@/types/enums';
+import { useMessage } from '@/utils/message';
 import UserDetailModal from './components/UserDetailModal';
 import UserEditModal from './components/UserEditModal';
 import type { UserInfo, UserListRequest } from '@/types';
@@ -37,6 +37,7 @@ import './UserManagement.less';
 const { Title } = Typography;
 
 const UserManagement: React.FC = () => {
+  const message = useMessage();
   const [form] = Form.useForm();
   const dispatch = useAppDispatch();
   const { userList, total, loading } = useAppSelector(state => state.user);

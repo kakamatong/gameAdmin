@@ -15,7 +15,6 @@ import {
   Tag,
   Select,
   Modal,
-  message,
   Tooltip,
   Typography,
 } from 'antd';
@@ -36,6 +35,7 @@ import {
   setCurrentMail 
 } from '@/store/slices/mailSlice';
 import { MailType, MailStatus, getMailTypeText, getMailStatusText } from '@/types/enums';
+import { useMessage } from '@/utils/message';
 import SendMailModal from './components/SendMailModal';
 import MailDetailModal from './components/MailDetailModal';
 import type { MailItem, MailListRequest } from '@/types';
@@ -46,6 +46,7 @@ const { Option } = Select;
 const { confirm } = Modal;
 
 const MailManagement: React.FC = () => {
+  const message = useMessage();
   const [form] = Form.useForm();
   const dispatch = useAppDispatch();
   const { mailList, total, loading, mailStats } = useAppSelector(state => state.mail);

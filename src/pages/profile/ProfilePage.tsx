@@ -11,7 +11,6 @@ import {
   Space,
   Tag,
   Typography,
-  message,
   Spin,
 } from 'antd';
 import {
@@ -26,6 +25,7 @@ import { useAppDispatch, useAppSelector } from '@/store';
 import { adminService } from '@/services/adminService';
 import { setAdminInfo } from '@/store/slices/authSlice';
 import { getSafeAvatarProps } from '@/utils/react19Compatibility';
+import { useMessage } from '@/utils/message';
 import { AdminStatus } from '@/types/enums';
 import type { AdminInfo } from '@/types/admin';
 import AdminEditModal from './AdminEditModal';
@@ -34,6 +34,7 @@ import './ProfilePage.less';
 const { Title, Text } = Typography;
 
 const ProfilePage: React.FC = () => {
+  const message = useMessage();
   const dispatch = useAppDispatch();
   const { adminInfo } = useAppSelector(state => state.auth);
   const [loading, setLoading] = useState(false);

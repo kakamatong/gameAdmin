@@ -10,7 +10,6 @@ import {
   Button,
   Upload,
   Avatar,
-  message,
   Space,
   InputNumber,
 } from 'antd';
@@ -25,6 +24,7 @@ import {
 import type { UploadProps } from 'antd';
 import { adminService } from '@/services/adminService';
 import { getSafeAvatarProps } from '@/utils/react19Compatibility';
+import { useMessage } from '@/utils/message';
 import type { AdminInfo, AdminUpdateRequest } from '@/types/admin';
 
 const { TextArea } = Input;
@@ -42,6 +42,7 @@ const AdminEditModal: React.FC<AdminEditModalProps> = ({
   onCancel,
   onSuccess,
 }) => {
+  const message = useMessage();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | undefined>();

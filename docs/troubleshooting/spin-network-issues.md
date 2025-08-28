@@ -25,6 +25,11 @@
    Warning: Instance created by `useForm` is not connected to any Form element. Forget to pass `form` prop?
    ```
 
+5. **Ant Design message 静态 API 警告**：
+   ```
+   Warning: [antd: message] Static function can not consume context like dynamic theme. Please use 'App' component instead.
+   ```
+
 ## 解决方案
 
 ### 1. 修复 Ant Design Spin 组件警告
@@ -176,6 +181,47 @@
 **修改的文件**：
 - `/root/gameAdmin/src/pages/mails/components/SendMailModal.tsx`
 
+### 5. 修复 Ant Design message 静态 API 警告
+
+**问题原因**：
+- 直接从 Ant Design 导入静态的 `message` API
+- 静态 API 无法消费动态主题上下文，与现代的 React 最佳实践不符
+
+**解决方法**：
+使用项目中已经存在的 `useMessage` hook：
+
+```tsx
+// 修改前（错误方式）
+import { message } from 'antd';
+
+const Component = () => {
+  const handleClick = () => {
+    message.success('成功信息');
+  };
+  // ...
+};
+
+// 修改后（正确方式）
+import { useMessage } from '@/utils/message';
+
+const Component = () => {
+  const message = useMessage();
+  
+  const handleClick = () => {
+    message.success('成功信息');
+  };
+  // ...
+};
+```
+
+**修改的文件**：
+- `/root/gameAdmin/src/pages/profile/ProfilePage.tsx`
+- `/root/gameAdmin/src/pages/profile/AdminEditModal.tsx`
+- `/root/gameAdmin/src/pages/users/UserManagement.tsx`
+- `/root/gameAdmin/src/pages/users/components/UserEditModal.tsx`
+- `/root/gameAdmin/src/pages/mails/MailManagement.tsx`
+- `/root/gameAdmin/src/pages/mails/components/SendMailModal.tsx`
+
 ## 验证结果
 
 ### 1. Spin 组件警告已解决
@@ -193,6 +239,12 @@
 - Modal 组件正常工作，使用新的 `destroyOnHidden` 属性
 
 ### 4. Form 组件警告已解决
+- 不再出现 `Instance created by useForm is not connected` 警告
+- Form 组件正常工作，所有 form 实例访问都在组件内部
+
+### 5. message 静态 API 警告已解决
+- 不再出现 `Static function can not consume context` 警告
+- 所有 message 调用都使用 useMessage hook，支持动态主题
 - 不再出现 `Instance created by useForm is not connected` 警告
 - Form 组件正常工作，所有 form 实例访问都在组件内部
 - 不再出现 `[antd: Modal] destroyOnClose is deprecated` 警告

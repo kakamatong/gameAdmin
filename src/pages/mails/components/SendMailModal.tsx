@@ -15,12 +15,12 @@ import {
   InputNumber,
   Button,
   Space,
-  message,
   Typography,
 } from 'antd';
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useAppDispatch } from '@/store';
 import { sendMailAsync } from '@/store/slices/mailSlice';
+import { useMessage } from '@/utils/message';
 import type { SendMailRequest, MailAwardItem } from '@/types';
 import dayjs from 'dayjs';
 
@@ -49,6 +49,7 @@ const SendMailModal: React.FC<SendMailModalProps> = ({
   onClose,
   onSuccess,
 }) => {
+  const message = useMessage();
   const [form] = Form.useForm<FormValues>();
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
