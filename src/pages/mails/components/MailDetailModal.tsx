@@ -67,8 +67,8 @@ const MailDetailModal: React.FC<MailDetailModalProps> = ({
       }
 
       const awardTypeMap: Record<number, string> = {
-        1: '金币',
-        2: '钻石',
+        1: '钻石',
+        2: '金币',
         3: '门票',
         4: '体力',
         5: '道具',

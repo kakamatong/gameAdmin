@@ -89,8 +89,8 @@ export enum MailStatus {
 
 // 奖励类型枚举
 export enum AwardType {
-  GOLD = 1,      // 金币
-  DIAMOND = 2,   // 钻石
+  DIAMOND = 1,      // 钻石
+  GOLD = 2,   // 金币
   TICKET = 3,    // 门票
   ENERGY = 4,    // 体力
   ITEM = 5,      // 道具

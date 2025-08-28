@@ -169,8 +169,8 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
                         rules={[{ required: true, message: '请选择财富类型' }]}
                       >
                         <Select placeholder="财富类型">
-                          <Option value={1}>金币</Option>
-                          <Option value={2}>钻石</Option>
+                          <Option value={1}>钻石</Option>
+                          <Option value={2}>金币</Option>
                           <Option value={3}>门票</Option>
                           <Option value={4}>体力</Option>
                           <Option value={5}>VIP经验</Option>

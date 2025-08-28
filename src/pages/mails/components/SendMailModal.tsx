@@ -55,8 +55,8 @@ const SendMailModal: React.FC<SendMailModalProps> = ({
 
   // 奖励类型选项
   const awardTypeOptions = [
-    { label: '金币', value: 1 },
-    { label: '钻石', value: 2 },
+    { label: '钻石', value: 1 },
+    { label: '金币', value: 2 },
     { label: '门票', value: 3 },
     { label: '体力', value: 4 },
     { label: '道具', value: 5 },

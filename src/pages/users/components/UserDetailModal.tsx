@@ -47,8 +47,8 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
     }
 
     const richTypeMap: Record<number, string> = {
-      1: '金币',
-      2: '钻石',
+      1: '钻石',
+      2: '金币',
       3: '门票',
       4: '体力',
       5: 'VIP经验',
