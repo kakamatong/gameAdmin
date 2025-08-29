@@ -11,6 +11,7 @@ import userSlice from './slices/userSlice';
 import logSlice from './slices/logSlice';
 import mailSlice from './slices/mailSlice';
 import uiSlice from './slices/uiSlice';
+import adminSlice from './slices/adminSlice';
 
 import type { RootState } from '@/types';
 
@@ -22,6 +23,7 @@ export const store = configureStore({
     log: logSlice,
     mail: mailSlice,
     ui: uiSlice,
+    admin: adminSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

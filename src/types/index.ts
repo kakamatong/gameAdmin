@@ -32,6 +32,7 @@ export interface RootState {
   log: LogState;
   mail: MailState;
   ui: UIState;
+  admin: AdminState;
 }
 
 // 认证状态
@@ -77,4 +78,13 @@ export interface UIState {
   theme: 'light' | 'dark';
   language: 'zh' | 'en';
   loading: boolean;
+}
+
+// 管理员管理状态
+export interface AdminState {
+  adminList: import('./admin').AdminInfo[];           // 管理员列表
+  currentAdmin: import('./admin').AdminInfo | null;   // 当前查看的管理员
+  total: number;                                      // 总数
+  loading: boolean;                                   // 加载状态
+  error: string | null;                               // 错误信息
 }

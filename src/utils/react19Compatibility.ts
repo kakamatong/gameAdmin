@@ -43,9 +43,6 @@ export const sanitizeImageSrc = (src: string | null | undefined): string | null 
 // 安全的 Avatar props 处理
 export const getSafeAvatarProps = (avatarUrl?: string | null) => {
   const safeSrc = sanitizeImageSrc(avatarUrl);
-  return {
-    src: safeSrc,
-    // 当没有头像时，确保显示默认图标
-    ...(safeSrc ? {} : { src: undefined })
-  };
+  // 只有当有有效的src时才设置src属性，否则完全不设置让Avatar使用默认图标
+  return safeSrc ? { src: safeSrc } : {};
 };

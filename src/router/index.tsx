@@ -10,6 +10,7 @@ import { LoginPage } from '@/pages/auth';
 import { UserManagement } from '@/pages/users';
 import { MailManagement } from '@/pages/mails';
 import { ProfilePage } from '@/pages/profile';
+import { AdminManagementPage } from '@/pages/admin';
 import { LoginLogsPage, GameLogsPage } from '@/pages/logs';
 import LogTestPage from '@/pages/logs/LogTestPage';
 import DashboardPage from '@/pages/dashboard/DashboardPage';
@@ -71,7 +72,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'admin',
-        element: <div>管理员管理页面（待实现）</div>,
+        element: <AdminManagementPage />,
       },
     ],
   },
