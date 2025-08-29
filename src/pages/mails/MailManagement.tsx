@@ -18,7 +18,6 @@ import {
   Tooltip,
 } from 'antd';
 import {
-  SearchOutlined,
   ReloadOutlined,
   PlusOutlined,
   EyeOutlined,
@@ -76,7 +75,6 @@ const MailManagement: React.FC = () => {
     const params: Partial<UserMailListRequest> = {
       page: 1,
       userid: values.userid,
-      title: values.title || undefined,
     };
     handleSearch(params);
   };
@@ -240,15 +238,6 @@ const MailManagement: React.FC = () => {
                   style={{ width: '100%' }}
                   min={1}
                   precision={0}
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={8} md={6}>
-              <Form.Item name="title" style={{ width: '100%' }}>
-                <Input
-                  placeholder="搜索邮件标题"
-                  prefix={<SearchOutlined />}
-                  allowClear
                 />
               </Form.Item>
             </Col>
