@@ -5,31 +5,16 @@
 import { http } from '@/utils/httpClient';
 import type {
   SendMailRequest,
-  MailListRequest,
-  MailListResponse,
-  MailItem,
-  UpdateMailStatusRequest,
-  MailStats,
+  UserMailListRequest,
+  UserMailListResponse,
 } from '@/types/mail';
 
 export const mailService = {
   // 发送系统邮件
-  sendMail: (data: SendMailRequest): Promise<void> =>
+  sendMail: (data: SendMailRequest): Promise<{ mailId: number }> =>
     http.post('/admin/mails/send', data),
 
-  // 获取邮件列表
-  getMailList: (params: MailListRequest): Promise<MailListResponse> =>
-    http.get('/admin/mails', params),
-
-  // 获取邮件详情
-  getMailDetail: (mailId: number): Promise<MailItem> =>
-    http.get(`/admin/mails/${mailId}`),
-
-  // 更新邮件状态
-  updateMailStatus: (mailId: number, data: UpdateMailStatusRequest): Promise<void> =>
-    http.put(`/admin/mails/${mailId}/status`, data),
-
-  // 获取邮件统计
-  getMailStats: (): Promise<MailStats> =>
-    http.get('/admin/mails/stats'),
+  // 搜索用户邮件（管理后台）
+  getUserMailList: (params: UserMailListRequest): Promise<UserMailListResponse> =>
+    http.get('/admin/mails/', params),
 };

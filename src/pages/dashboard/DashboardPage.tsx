@@ -2,7 +2,7 @@
  * 控制台页面
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Row, Col, Card, Statistic, Typography } from 'antd';
 import {
   UserOutlined,
@@ -10,20 +10,10 @@ import {
   FileTextOutlined,
   TrophyOutlined,
 } from '@ant-design/icons';
-import { useAppDispatch, useAppSelector } from '@/store';
-import { getMailStatsAsync } from '@/store/slices/mailSlice';
 
 const { Title } = Typography;
 
 const DashboardPage: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const { mailStats } = useAppSelector(state => state.mail);
-
-  useEffect(() => {
-    // 获取邮件统计信息
-    dispatch(getMailStatsAsync());
-  }, [dispatch]);
-
   return (
     <div className="dashboard-page">
       <Title level={2} style={{ marginBottom: 24 }}>
@@ -46,7 +36,7 @@ const DashboardPage: React.FC = () => {
           <Card>
             <Statistic
               title="今日邮件"
-              value={mailStats?.todayMails || 0}
+              value={0}
               prefix={<MailOutlined />}
               valueStyle={{ color: '#1890ff' }}
             />
@@ -57,7 +47,7 @@ const DashboardPage: React.FC = () => {
           <Card>
             <Statistic
               title="活跃邮件"
-              value={mailStats?.activeMails || 0}
+              value={0}
               prefix={<FileTextOutlined />}
               valueStyle={{ color: '#722ed1' }}
             />
@@ -68,7 +58,7 @@ const DashboardPage: React.FC = () => {
           <Card>
             <Statistic
               title="总邮件数"
-              value={mailStats?.totalMails || 0}
+              value={0}
               prefix={<TrophyOutlined />}
               valueStyle={{ color: '#cf1322' }}
             />

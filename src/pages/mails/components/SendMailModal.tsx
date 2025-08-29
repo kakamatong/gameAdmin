@@ -54,14 +54,14 @@ const SendMailModal: React.FC<SendMailModalProps> = ({
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
 
-  // 奖励类型选项
+  // 奖励类型选项（与API文档中的RichType保持一致）
   const awardTypeOptions = [
     { label: '钻石', value: 1 },
     { label: '金币', value: 2 },
     { label: '门票', value: 3 },
     { label: '体力', value: 4 },
-    { label: '道具', value: 5 },
-    { label: 'VIP经验', value: 6 },
+    { label: 'VIP经验', value: 5 },
+    { label: '道具', value: 6 },
   ];
 
   // 处理表单提交
@@ -82,17 +82,27 @@ const SendMailModal: React.FC<SendMailModalProps> = ({
       }
 
       // 处理奖励数据
-      const awards = values.awards?.filter(award => award.type && award.count > 0) || [];
+      const awards = values.awards?.filter(award => award.id && award.cnt > 0) || [];
+      const awardData = {
+        props: awards.map(award => ({
+          id: award.id,
+          cnt: award.cnt
+        }))
+      };
 
       const sendData: SendMailRequest = {
         type: values.type,
         title: values.title,
         content: values.content,
-        awards: JSON.stringify(awards),
+        awards: JSON.stringify(awardData),
         startTime: values.timeRange[0].toISOString(),
         endTime: values.timeRange[1].toISOString(),
-        targetUsers,
       };
+
+      // 仅在个人邮件时添加targetUsers字段
+      if (values.type === 1) {
+        sendData.targetUsers = targetUsers;
+      }
 
       await dispatch(sendMailAsync(sendData)).unwrap();
       
@@ -239,7 +249,7 @@ const SendMailModal: React.FC<SendMailModalProps> = ({
                     <Col span={8}>
                       <Form.Item
                         {...restField}
-                        name={[name, 'type']}
+                        name={[name, 'id']}
                         label="奖励类型"
                         rules={[{ required: true, message: '请选择奖励类型' }]}
                       >
@@ -255,7 +265,7 @@ const SendMailModal: React.FC<SendMailModalProps> = ({
                     <Col span={12}>
                       <Form.Item
                         {...restField}
-                        name={[name, 'count']}
+                        name={[name, 'cnt']}
                         label="数量"
                         rules={[
                           { required: true, message: '请输入数量' },
@@ -283,7 +293,7 @@ const SendMailModal: React.FC<SendMailModalProps> = ({
                 <Form.Item>
                   <Button
                     type="dashed"
-                    onClick={() => add({ type: 1, count: 1 })}
+                    onClick={() => add({ id: 1, cnt: 1 })}
                     block
                     icon={<PlusOutlined />}
                   >

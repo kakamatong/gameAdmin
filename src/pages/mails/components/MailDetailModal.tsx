@@ -4,14 +4,15 @@
 
 import React from 'react';
 import { Modal, Descriptions, Tag, Space, Typography, Card } from 'antd';
-import { MailOutlined } from '@ant-design/icons';
-import type { MailItem } from '@/types';
+import { MailOutlined, UserOutlined } from '@ant-design/icons';
+import type { UserMailItem } from '@/types';
+import { getMailTypeText, getUserMailStatusText } from '@/types/enums';
 
 const { Text, Paragraph } = Typography;
 
 interface MailDetailModalProps {
   visible: boolean;
-  mail: MailItem | null;
+  mail: UserMailItem | null;
   onClose: () => void;
 }
 
@@ -28,18 +29,22 @@ const MailDetailModal: React.FC<MailDetailModalProps> = ({
   };
 
   // 获取邮件类型标签
-  const getTypeTag = (type: number) => (
-    <Tag color={type === 0 ? 'blue' : 'green'}>
-      {type === 0 ? '全服邮件' : '个人邮件'}
-    </Tag>
-  );
+  const getTypeTag = (type: number) => {
+    const typeText = getMailTypeText(type);
+    const color = type === 0 ? 'blue' : 'green';
+    return <Tag color={color}>{typeText}</Tag>;
+  };
 
   // 获取状态标签
-  const getStatusTag = (status: number) => (
-    <Tag color={status === 1 ? 'green' : 'red'}>
-      {status === 1 ? '启用' : '禁用'}
-    </Tag>
-  );
+  const getStatusTag = (status: number) => {
+    const statusText = getUserMailStatusText(status);
+    let color = 'default';
+    if (status === 0) color = 'red';         // 未读
+    else if (status === 1) color = 'orange'; // 已读
+    else if (status === 2) color = 'green';  // 已领取
+    else if (status === 3) color = 'gray';   // 已删除
+    return <Tag color={color}>{statusText}</Tag>;
+  };
 
   // 获取有效期状态
   const getValidityStatus = () => {
@@ -58,11 +63,13 @@ const MailDetailModal: React.FC<MailDetailModalProps> = ({
 
   // 解析奖励信息
   const parseAwards = () => {
-    if (!mail.awards) return null;
+    if (!mail.awards) return <Text type="secondary">无奖励</Text>;
     
     try {
-      const awards = JSON.parse(mail.awards);
-      if (!Array.isArray(awards) || awards.length === 0) {
+      const awardData = JSON.parse(mail.awards);
+      const props = awardData.props || [];
+      
+      if (!Array.isArray(props) || props.length === 0) {
         return <Text type="secondary">无奖励</Text>;
       }
 
@@ -71,16 +78,16 @@ const MailDetailModal: React.FC<MailDetailModalProps> = ({
         2: '金币',
         3: '门票',
         4: '体力',
-        5: '道具',
-        6: 'VIP经验',
+        5: 'VIP经验',
+        6: '道具',
       };
 
       return (
         <Space direction="vertical" size={4}>
-          {awards.map((award: any, index: number) => (
+          {props.map((award: any, index: number) => (
             <div key={index}>
-              <Text strong>{awardTypeMap[award.type] || `类型${award.type}`}:</Text>
-              <Text style={{ marginLeft: 8 }}>{award.count?.toLocaleString() || 0}</Text>
+              <Text strong>{awardTypeMap[award.id] || `类型${award.id}`}:</Text>
+              <Text style={{ marginLeft: 8 }}>{award.cnt?.toLocaleString() || 0}</Text>
             </div>
           ))}
         </Space>
@@ -108,8 +115,18 @@ const MailDetailModal: React.FC<MailDetailModalProps> = ({
         <Descriptions.Item label="邮件ID" span={1}>
           {mail.id}
         </Descriptions.Item>
+        <Descriptions.Item label="用户ID" span={1}>
+          <Space>
+            <UserOutlined />
+            <span>{mail.userid}</span>
+          </Space>
+        </Descriptions.Item>
+
         <Descriptions.Item label="邮件类型" span={1}>
           {getTypeTag(mail.type)}
+        </Descriptions.Item>
+        <Descriptions.Item label="邮件状态" span={1}>
+          {getStatusTag(mail.status)}
         </Descriptions.Item>
 
         <Descriptions.Item label="邮件标题" span={2}>
@@ -140,15 +157,12 @@ const MailDetailModal: React.FC<MailDetailModalProps> = ({
         <Descriptions.Item label="有效期状态" span={1}>
           {getValidityStatus()}
         </Descriptions.Item>
-        <Descriptions.Item label="邮件状态" span={1}>
-          {getStatusTag(mail.status)}
+        <Descriptions.Item label="创建时间" span={1}>
+          {formatTime(mail.createdAt)}
         </Descriptions.Item>
 
-        <Descriptions.Item label="创建时间" span={1}>
-          {formatTime(mail.createTime || mail.startTime)}
-        </Descriptions.Item>
-        <Descriptions.Item label="更新时间" span={1}>
-          {formatTime(mail.updateTime || mail.createTime || mail.startTime)}
+        <Descriptions.Item label="更新时间" span={2}>
+          {formatTime(mail.updateAt)}
         </Descriptions.Item>
       </Descriptions>
 

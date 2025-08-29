@@ -133,6 +133,22 @@ export const MailReceiveStatus = {
 
 export type MailReceiveStatus = (typeof MailReceiveStatus)[keyof typeof MailReceiveStatus];
 
+/**
+ * 用户邮件状态常量（综合读取和领取状态）
+ */
+export const UserMailStatus = {
+  /** 未读 */
+  UNREAD: 0,
+  /** 已读 */
+  READ: 1,
+  /** 已领取 */
+  CLAIMED: 2,
+  /** 已删除 */
+  DELETED: 3,
+} as const;
+
+export type UserMailStatus = (typeof UserMailStatus)[keyof typeof UserMailStatus];
+
 // =============================================================================
 // 管理员相关常量
 // =============================================================================
@@ -262,6 +278,19 @@ export const getMailStatusText = (status: number): string => {
   const textMap: Record<number, string> = {
     [MailStatus.DISABLED]: '禁用',
     [MailStatus.ACTIVE]: '启用',
+  };
+  return textMap[status] || '未知';
+};
+
+/**
+ * 获取用户邮件状态显示文本
+ */
+export const getUserMailStatusText = (status: number): string => {
+  const textMap: Record<number, string> = {
+    [UserMailStatus.UNREAD]: '未读',
+    [UserMailStatus.READ]: '已读',
+    [UserMailStatus.CLAIMED]: '已领取',
+    [UserMailStatus.DELETED]: '已删除',
   };
   return textMap[status] || '未知';
 };

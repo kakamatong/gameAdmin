@@ -64,12 +64,11 @@ export interface LogState {
 
 // 邮件状态
 export interface MailState {
-  mailList: import('./mail').MailItem[];
-  currentMail: import('./mail').MailItem | null;
-  mailStats: import('./mail').MailStats | null;
-  total: number;
-  loading: boolean;
-  error: string | null;
+  userMailList: import('./mail').UserMailItem[];  // 用户邮件列表
+  currentMail: import('./mail').UserMailItem | null;  // 当前查看的邮件
+  total: number;                                   // 总数
+  loading: boolean;                                // 加载状态
+  error: string | null;                            // 错误信息
 }
 
 // UI状态

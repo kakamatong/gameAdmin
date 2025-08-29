@@ -2,7 +2,7 @@
  * 邮件管理页面
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   Table,
@@ -13,77 +13,70 @@ import {
   Col,
   Space,
   Tag,
-  Select,
-  Modal,
-  Tooltip,
   Typography,
+  InputNumber,
+  Tooltip,
 } from 'antd';
 import {
   SearchOutlined,
   ReloadOutlined,
   PlusOutlined,
-  EditOutlined,
   EyeOutlined,
   MailOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { 
-  getMailListAsync, 
-  updateMailStatusAsync,
-  getMailStatsAsync,
+  getUserMailListAsync,
   setCurrentMail 
 } from '@/store/slices/mailSlice';
-import { MailType, MailStatus, getMailTypeText, getMailStatusText } from '@/types/enums';
+import { getMailTypeText, getUserMailStatusText } from '@/types/enums';
 import { useMessage } from '@/utils/message';
 import SendMailModal from './components/SendMailModal';
 import MailDetailModal from './components/MailDetailModal';
-import type { MailItem, MailListRequest } from '@/types';
+import type { UserMailItem, UserMailListRequest } from '@/types';
 import './MailManagement.less';
 
 const { Title } = Typography;
-const { Option } = Select;
-const { confirm } = Modal;
 
 const MailManagement: React.FC = () => {
   const message = useMessage();
   const [form] = Form.useForm();
   const dispatch = useAppDispatch();
-  const { mailList, total, loading, mailStats } = useAppSelector(state => state.mail);
+  const { userMailList, total, loading } = useAppSelector(state => state.mail);
   
-  const [searchParams, setSearchParams] = useState<MailListRequest>({
+  const [searchParams, setSearchParams] = useState<UserMailListRequest>({
     page: 1,
     pageSize: 20,
   });
   const [sendModalVisible, setSendModalVisible] = useState(false);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
-  const [selectedMail, setSelectedMail] = useState<MailItem | null>(null);
+  const [selectedMail, setSelectedMail] = useState<UserMailItem | null>(null);
 
-  // 初始加载数据
-  useEffect(() => {
-    handleSearch();
-    dispatch(getMailStatsAsync());
-  }, []);
-
-  // 获取邮件列表
-  const handleSearch = async (params?: Partial<MailListRequest>) => {
+  // 获取用户邮件列表
+  const handleSearch = async (params?: Partial<UserMailListRequest>) => {
     const finalParams = { ...searchParams, ...params };
     setSearchParams(finalParams);
     
     try {
-      await dispatch(getMailListAsync(finalParams)).unwrap();
+      await dispatch(getUserMailListAsync(finalParams)).unwrap();
     } catch (error) {
-      message.error('获取邮件列表失败');
+      message.error('获取用户邮件列表失败');
     }
   };
 
   // 搜索表单提交
   const onSearch = (values: any) => {
-    const params: Partial<MailListRequest> = {
+    if (!values.userid) {
+      message.warning('请输入用户ID');
+      return;
+    }
+    
+    const params: Partial<UserMailListRequest> = {
       page: 1,
-      keyword: values.keyword || undefined,
-      status: values.status !== undefined ? values.status : undefined,
-      type: values.type !== undefined ? values.type : undefined,
+      userid: values.userid,
+      title: values.title || undefined,
     };
     handleSearch(params);
   };
@@ -91,37 +84,15 @@ const MailManagement: React.FC = () => {
   // 重置搜索
   const onReset = () => {
     form.resetFields();
-    handleSearch({ page: 1, keyword: undefined, status: undefined, type: undefined });
+    setSearchParams({ page: 1, pageSize: 20 });
+    // 可以在这里清空列表数据
   };
 
   // 查看邮件详情
-  const handleViewDetail = (mail: MailItem) => {
+  const handleViewDetail = (mail: UserMailItem) => {
     setSelectedMail(mail);
     dispatch(setCurrentMail(mail));
     setDetailModalVisible(true);
-  };
-
-  // 更新邮件状态
-  const handleUpdateStatus = (mail: MailItem, status: number) => {
-    const statusText = getMailStatusText(status);
-    
-    confirm({
-      title: `确认${statusText}邮件`,
-      content: `确定要${statusText}邮件"${mail.title}"吗？`,
-      onOk: async () => {
-        try {
-          await dispatch(updateMailStatusAsync({ 
-            mailId: mail.id, 
-            data: { status } 
-          })).unwrap();
-          
-          message.success(`邮件${statusText}成功`);
-          handleSearch(); // 刷新列表
-        } catch (error: any) {
-          message.error(error.message || `${statusText}邮件失败`);
-        }
-      },
-    });
   };
 
   // 分页变化
@@ -130,13 +101,24 @@ const MailManagement: React.FC = () => {
   };
 
   // 表格列定义
-  const columns: ColumnsType<MailItem> = [
+  const columns: ColumnsType<UserMailItem> = [
     {
       title: '邮件ID',
       dataIndex: 'id',
       key: 'id',
       width: 80,
-      sorter: true,
+    },
+    {
+      title: '用户ID',
+      dataIndex: 'userid',
+      key: 'userid',
+      width: 100,
+      render: (userid: number) => (
+        <Space>
+          <UserOutlined />
+          <span>{userid}</span>
+        </Space>
+      ),
     },
     {
       title: '标题',
@@ -144,7 +126,7 @@ const MailManagement: React.FC = () => {
       key: 'title',
       width: 200,
       ellipsis: true,
-      render: (text: string, record: MailItem) => (
+      render: (text: string) => (
         <Space>
           <MailOutlined />
           <span>{text}</span>
@@ -158,38 +140,8 @@ const MailManagement: React.FC = () => {
       width: 100,
       render: (type: number) => {
         const typeText = getMailTypeText(type);
-        const color = type === MailType.GLOBAL ? 'blue' : 'green';
+        const color = type === 0 ? 'blue' : 'green';
         return <Tag color={color}>{typeText}</Tag>;
-      },
-    },
-    {
-      title: '内容摘要',
-      dataIndex: 'content',
-      key: 'content',
-      width: 200,
-      ellipsis: true,
-      render: (content: string) => {
-        const summary = content.length > 50 ? content.substring(0, 50) + '...' : content;
-        return <span title={content}>{summary}</span>;
-      },
-    },
-    {
-      title: '奖励',
-      dataIndex: 'awards',
-      key: 'awards',
-      width: 120,
-      render: (awards: string) => {
-        if (!awards) return <span>无奖励</span>;
-        try {
-          const awardList = JSON.parse(awards);
-          return (
-            <span>
-              {Array.isArray(awardList) && awardList.length > 0 ? '有奖励' : '无奖励'}
-            </span>
-          );
-        } catch {
-          return <span>无奖励</span>;
-        }
       },
     },
     {
@@ -198,8 +150,12 @@ const MailManagement: React.FC = () => {
       key: 'status',
       width: 80,
       render: (status: number) => {
-        const statusText = getMailStatusText(status);
-        const color = status === MailStatus.ACTIVE ? 'green' : 'red';
+        const statusText = getUserMailStatusText(status);
+        let color = 'default';
+        if (status === 0) color = 'red';         // 未读
+        else if (status === 1) color = 'orange'; // 已读
+        else if (status === 2) color = 'green';  // 已领取
+        else if (status === 3) color = 'gray';   // 已删除
         return <Tag color={color}>{statusText}</Tag>;
       },
     },
@@ -207,7 +163,7 @@ const MailManagement: React.FC = () => {
       title: '有效期',
       key: 'validity',
       width: 160,
-      render: (_, record: MailItem) => {
+      render: (_, record: UserMailItem) => {
         const now = new Date();
         const startTime = new Date(record.startTime);
         const endTime = new Date(record.endTime);
@@ -235,8 +191,8 @@ const MailManagement: React.FC = () => {
     },
     {
       title: '创建时间',
-      dataIndex: 'createTime',
-      key: 'createTime',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
       width: 120,
       render: (time: string) => {
         return new Date(time).toLocaleDateString();
@@ -245,27 +201,17 @@ const MailManagement: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      width: 150,
+      width: 100,
       fixed: 'right',
-      render: (_, record: MailItem) => (
-        <Space>
-          <Tooltip title="查看详情">
-            <Button
-              type="text"
-              size="small"
-              icon={<EyeOutlined />}
-              onClick={() => handleViewDetail(record)}
-            />
-          </Tooltip>
-          <Tooltip title={record.status === MailStatus.ACTIVE ? '禁用' : '启用'}>
-            <Button
-              type="text"
-              size="small"
-              icon={<EditOutlined />}
-              onClick={() => handleUpdateStatus(record, record.status === MailStatus.ACTIVE ? MailStatus.DISABLED : MailStatus.ACTIVE)}
-            />
-          </Tooltip>
-        </Space>
+      render: (_, record: UserMailItem) => (
+        <Tooltip title="查看详情">
+          <Button
+            type="text"
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() => handleViewDetail(record)}
+          />
+        </Tooltip>
       ),
     },
   ];
@@ -273,44 +219,6 @@ const MailManagement: React.FC = () => {
   return (
     <div className="mail-management">
       <Title level={2}>邮件管理</Title>
-      
-      {/* 统计卡片 */}
-      {mailStats && (
-        <Row gutter={16} style={{ marginBottom: 16 }}>
-          <Col xs={24} sm={6}>
-            <Card size="small">
-              <div className="stat-card">
-                <div className="stat-number">{mailStats.totalMails}</div>
-                <div className="stat-label">总邮件</div>
-              </div>
-            </Card>
-          </Col>
-          <Col xs={24} sm={6}>
-            <Card size="small">
-              <div className="stat-card">
-                <div className="stat-number" style={{ color: '#52c41a' }}>{mailStats.activeMails}</div>
-                <div className="stat-label">活跃邮件</div>
-              </div>
-            </Card>
-          </Col>
-          <Col xs={24} sm={6}>
-            <Card size="small">
-              <div className="stat-card">
-                <div className="stat-number" style={{ color: '#1890ff' }}>{mailStats.globalMails}</div>
-                <div className="stat-label">全服邮件</div>
-              </div>
-            </Card>
-          </Col>
-          <Col xs={24} sm={6}>
-            <Card size="small">
-              <div className="stat-card">
-                <div className="stat-number" style={{ color: '#722ed1' }}>{mailStats.personalMails}</div>
-                <div className="stat-label">个人邮件</div>
-              </div>
-            </Card>
-          </Col>
-        </Row>
-      )}
       
       {/* 搜索表单 */}
       <Card className="search-card" variant="borderless">
@@ -322,7 +230,21 @@ const MailManagement: React.FC = () => {
         >
           <Row gutter={16} style={{ width: '100%' }}>
             <Col xs={24} sm={8} md={6}>
-              <Form.Item name="keyword" style={{ width: '100%' }}>
+              <Form.Item 
+                name="userid" 
+                style={{ width: '100%' }}
+                rules={[{ required: true, message: '请输入用户ID' }]}
+              >
+                <InputNumber
+                  placeholder="用户ID（必填）"
+                  style={{ width: '100%' }}
+                  min={1}
+                  precision={0}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={8} md={6}>
+              <Form.Item name="title" style={{ width: '100%' }}>
                 <Input
                   placeholder="搜索邮件标题"
                   prefix={<SearchOutlined />}
@@ -330,23 +252,7 @@ const MailManagement: React.FC = () => {
                 />
               </Form.Item>
             </Col>
-            <Col xs={24} sm={8} md={6}>
-              <Form.Item name="type" style={{ width: '100%' }}>
-                <Select placeholder="邮件类型" allowClear>
-                  <Option value={MailType.GLOBAL}>全服邮件</Option>
-                  <Option value={MailType.PERSONAL}>个人邮件</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={8} md={6}>
-              <Form.Item name="status" style={{ width: '100%' }}>
-                <Select placeholder="状态" allowClear>
-                  <Option value={MailStatus.ACTIVE}>启用</Option>
-                  <Option value={MailStatus.DISABLED}>禁用</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={24} md={6}>
+            <Col xs={24} sm={24} md={12}>
               <Space>
                 <Button type="primary" htmlType="submit" loading={loading}>
                   搜索
@@ -356,7 +262,12 @@ const MailManagement: React.FC = () => {
                 </Button>
                 <Button
                   icon={<ReloadOutlined />}
-                  onClick={() => handleSearch({ page: 1 })}
+                  onClick={() => {
+                    const userid = form.getFieldValue('userid');
+                    if (userid) {
+                      handleSearch({ page: 1 });
+                    }
+                  }}
                   loading={loading}
                 >
                   刷新
@@ -379,9 +290,9 @@ const MailManagement: React.FC = () => {
           </Button>
         </div>
         
-        <Table<MailItem>
+        <Table<UserMailItem>
           columns={columns}
-          dataSource={mailList}
+          dataSource={userMailList}
           rowKey="id"
           loading={loading}
           pagination={{
@@ -404,8 +315,7 @@ const MailManagement: React.FC = () => {
         onClose={() => setSendModalVisible(false)}
         onSuccess={() => {
           setSendModalVisible(false);
-          handleSearch(); // 刷新列表
-          dispatch(getMailStatsAsync()); // 刷新统计
+          message.success('邮件发送成功');
         }}
       />
 
